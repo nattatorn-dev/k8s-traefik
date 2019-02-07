@@ -24,9 +24,9 @@ spec:
       serviceAccountName: traefik-ingress-controller
       terminationGracePeriodSeconds: 60
       volumes:
-        - name: tls-cert
+        - name: cert
           secret:
-            secretName: tls-cert
+            secretName: cert
         - name: traefik-configmap
           configMap:
             name: traefik-configmap
@@ -75,7 +75,7 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - mountPath: "/ssl"
-              name: "tls-cert"
+              name: "cert"
             - mountPath: "/config"
               name: "traefik-configmap"
           ports:

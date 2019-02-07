@@ -21,7 +21,7 @@ kubectl create secret tls foo-secret --key /tmp/tls.key --cert /tmp/tls.crt
 - Create a TLS secret:
 
 ```
-kubectl create secret tls traefik-ui-tls-cert - - key ./tls.key  --cert ./tls.crt
+kubectl create secret tls cert - - key ./tls.key  --cert ./tls.crt
 ```
 
 - Apply deployment file:
