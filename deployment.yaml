@@ -1,0 +1,97 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress
+        name: traefik-ingress
+        namespace: kube-system
+        # io.rancher.container.pull_image: always
+        # io.rancher.container.create_agent: "true"
+        # io.rancher.container.agent.role: environment
+        # io.rancher.container.global: "true"
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: tls-cert
+          secret:
+            secretName: tls-cert
+        - name: traefik-configmap
+          configMap:
+            name: traefik-configmap
+      containers:
+        - image: traefik:v1.7.4
+          name: traefik-ingress
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CATTLE_URL
+              value: "https://example.com/v3"
+            - name: CATTLE_ACCESS_KEY
+              value: ""
+            - name: CATTLE_SECRET_KEY
+              value: ""
+            - name: CLOUDFLARE_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare
+                  key: email
+            - name: CLOUDFLARE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare
+                  key: api_key
+          resources:
+            limits:
+              cpu: 200m
+              memory: 384Mi
+            requests:
+              cpu: 25m
+              memory: 128Mi
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            periodSeconds: 5
+          volumeMounts:
+            - mountPath: "/ssl"
+              name: "tls-cert"
+            - mountPath: "/config"
+              name: "traefik-configmap"
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+            - name: dashboard
+              containerPort: 8080
+          args:
+            - --logLevel=INFO
+            - --insecureSkipVerify=true
+            - --configfile=/config/traefik.toml
+            - --rancher
+            - --rancher.api
+            - --rancher.api.accesskey=
+            - --rancher.api.endpoint=https://example.com/v3
+            - --rancher.api.secretkey=
+            - --rancher.domain=example.com

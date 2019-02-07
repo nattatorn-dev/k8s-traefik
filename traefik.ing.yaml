@@ -1,0 +1,26 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik
+  namespace: kube-system
+  annotations:
+    # service.beta.kubernetes.io/aws-load-balancer-extra-security-groups: sg-012d509ea84451534
+    # external-dns.alpha.kubernetes.io/hostname: example.com
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:087924106500:certificate/d6d78206-b561-4a1d-adcf-514de4196b2e
+    # service.beta.kubernetes.io/aws-load-balancer-access-log-enabled: "true"
+    # The interval for publishing the access logs (can be 5 or 60 minutes).
+    # service.beta.kubernetes.io/aws-load-balancer-access-log-emit-interval: "60"
+    # service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-name: ledgerx-icoportal-elb
+    # service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-prefix: logs/staging
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+spec:
+  selector:
+    k8s-app: traefik-ingress
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
+    - protocol: TCP
+      port: 443
+      name: https
+  type: LoadBalancer

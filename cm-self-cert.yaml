@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-configmap
+  namespace: kube-system
+data:
+  traefik.toml: |
+    insecureSkipVerify = true
+    defaultEntryPoints = ["http","https"]
+    [entryPoints]
+      [entryPoints.http]
+      address = ":80"
+        [entryPoints.http.redirect]
+        regex = "^http://(.*)"
+        replacement = "https://$1"
+      [entryPoints.https]
+      address = ":443"
+        [entryPoints.https.tls]
+
+    [kubernetes]
+      [kubernetes.ingressEndpoint]
+        publishedService = "kube-system/traefik"
+
+
+    [acme]
+      email = "support@example.com"
+      storage = "acme.json"
+      entryPoint = "https"
+      OnHostRule = true
+      acmeLogging = true
+      [acme.dnsChallenge]
+        provider = "cloudflare"
+        delayBeforeCheck = 0
+
+      [[acme.domains]]
+        main = "example.com"
+      [[acme.domains]]
+        main = "*.example.com"
+
+    [rancher]
+    domain = "https://example.com/"
+      [rancher.api]
+      endpoint = "https://example.com/v3/"
+      accessKey = "token-2tfcx"
+      secretKey = "w9wxs4cnzcb8bh585vp6fwdhmjxdbggms8bjzl6j42zjlxmdjmnznn"
+    [ping]
+    entryPoint = "http"
+    [api]
+    entryPoint = "traefik"

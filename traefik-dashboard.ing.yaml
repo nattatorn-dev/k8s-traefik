@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    external-dns.alpha.kubernetes.io/hostname: traefik.example.com
+    # traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    # traefik.ingress.kubernetes.io/redirect-entry-point: https
+    # traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.frontend.rule.type: PathPrefixStrip
+    # traefik.ingress.kubernetes.io/priority: "1"
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: traefik-ui-basic-auth
+    ingress.kubernetes.io/auth-realm: "traefik"
+spec:
+  rules:
+    - host: traefik.example.com
+      http:
+        paths:
+          - path: /traefik/
+            backend:
+              serviceName: traefik-dashboard
+              servicePort: dashboard
