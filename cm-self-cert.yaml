@@ -41,8 +41,8 @@ data:
     domain = "https://example.com/"
       [rancher.api]
       endpoint = "https://example.com/v3/"
-      accessKey = "token-2tfcx"
-      secretKey = "w9wxs4cnzcb8bh585vp6fwdhmjxdbggms8bjzl6j42zjlxmdjmnznn"
+      accessKey = ""
+      secretKey = ""
     [ping]
     entryPoint = "http"
     [api]
